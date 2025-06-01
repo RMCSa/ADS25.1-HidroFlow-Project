@@ -85,8 +85,8 @@
 
     <script>
         // === Configurações MQTT (PAINEL WEB) ===
-        const MQTT_BROKER_WEBSOCKET = "ws://broker.emqx.io:8083/mqtt"; // WebSocket não seguro
-        // const MQTT_BROKER_WEBSOCKET = "wss://broker.emqx.io:8084/mqtt"; // WebSocket seguro (recomendado se tiver certificado)
+        // const MQTT_BROKER_WEBSOCKET = "ws://broker.emqx.io:8083/mqtt"; // WebSocket não seguro
+        const MQTT_BROKER_WEBSOCKET = "wss://broker.emqx.io:8084/mqtt"; // WebSocket seguro (recomendado se tiver certificado)
         const MQTT_CLIENT_ID_WEB = "hidroflow_web_client_" + Math.random().toString(16).substr(2, 8); // ID de cliente aleatório para o painel
 
         // Tópicos MQTT (DEVEM CORRESPONDER AOS DO ESP32)
