@@ -1,0 +1,230 @@
+/* src/components/PlantMonitorPanel.module.css */
+.panelContainer {
+    background-color: #ffffff; /* var(--card-background-color) */
+    padding: 18px; /* var(--spacing-md) */
+    border-radius: 8px; /* var(--border-radius) */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* var(--box-shadow) */
+    width: 100%;
+    max-width: 95vw;
+    margin-bottom: 18px; /* var(--spacing-md) */
+  }
+  
+  .header {
+    display: flex;
+    justify-content: center; /* Centraliza o H1 se não houver outros elementos */
+    align-items: center;
+    margin-bottom: 18px; /* var(--spacing-md) */
+    gap: 12px; /* var(--spacing-sm) */
+  }
+  
+  .header h1 {
+    color: #007bff; /* var(--primary-color) */
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+    font-size: clamp(1.7rem, 1.5vw + 0.9rem, 2.15rem); /* var(--font-size-xl) */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px; /* var(--spacing-sm) */
+    margin: 0; /* Reset margin for h1 inside flex */
+  }
+  
+  .header .icon {
+    font-size: clamp(1.25rem, 1.2vw + 0.7rem, 1.75rem); /* var(--font-size-lg) */
+  }
+  
+  .connectionStatusContainer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px; /* var(--spacing-sm) */
+    margin-bottom: 18px; /* var(--spacing-md) */
+  }
+  
+  .statusIndicator {
+    font-weight: 500;
+    padding: 12px; /* var(--spacing-sm) */
+    border-radius: 8px; /* var(--border-radius) */
+    text-align: center;
+    font-size: clamp(0.95rem, 0.8vw + 0.6rem, 1.1rem); /* var(--font-size-base) */
+    border: 1px solid transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px; /* var(--spacing-xs) */
+    flex: 1 1 auto;
+    min-width: 200px;
+  }
+  
+  .statusIndicator.connected { /* Para MQTT conectado, ESP online */
+    background-color: #d4edda;
+    color: #155724;
+    border-color: #c3e6cb;
+  }
+  
+  .statusIndicator.disconnected { /* Para MQTT desconectado, ESP offline */
+    background-color: #f8d7da;
+    color: #721c24;
+    border-color: #f5c6cb;
+  }
+  .statusIndicator.loading { /* Para ESP carregando */
+     background-color: #fff3cd;
+     color: #856404;
+     border-color: #ffeeba;
+  }
+  
+  
+  .mainContent {
+    display: flex;
+    flex-direction: column;
+    gap: 28px; /* var(--spacing-lg) */
+    margin-top: 28px; /* var(--spacing-lg) */
+    width: 100%;
+  }
+  
+  .sectionTitle {
+    font-family: 'Roboto', sans-serif;
+    font-size: clamp(1.1rem, 1vw + 0.6rem, 1.25rem); /* var(--font-size-md) */
+    color: #007bff; /* var(--primary-color) */
+    margin-bottom: 12px; /* var(--spacing-sm) */
+    padding-bottom: 8px; /* var(--spacing-xs) */
+    border-bottom: 2px solid #007bff; /* var(--primary-color) */
+    display: inline-block;
+  }
+  
+  .statusGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 18px; /* var(--spacing-md) */
+    margin-bottom: 28px; /* var(--spacing-lg) */
+  }
+  
+  .statusItem {
+    background-color: #ffffff; /* var(--card-background-color) */
+    padding: 18px; /* var(--spacing-md) */
+    border-radius: 8px; /* var(--border-radius) */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    border-left: 5px solid #007bff; /* var(--primary-color) */
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* var(--spacing-xs) */
+  }
+  .statusItemHeader {
+    display: flex;
+    align-items: center;
+    gap: 12px; /* var(--spacing-sm) */
+  }
+  .statusItemHeader .icon {
+    font-size: clamp(1.1rem, 1vw + 0.6rem, 1.25rem); /* var(--font-size-md) */
+    color: #007bff; /* var(--primary-color) */
+    width: 25px;
+    text-align: center;
+  }
+  .statusItemHeader strong {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    font-size: clamp(0.95rem, 0.8vw + 0.6rem, 1.1rem); /* var(--font-size-base) */
+    color: #555; /* var(--text-light-color) */
+  }
+  .statusValue {
+    font-size: clamp(1.25rem, 1.2vw + 0.7rem, 1.75rem); /* var(--font-size-lg) */
+    font-weight: 700;
+    color: #333; /* var(--text-color) */
+    margin-left: calc(25px + 12px); /* icon width + gap */
+    word-break: break-word;
+  }
+  
+  /* Classes de status condicional para cards (exemplo para umidade) */
+  .soilDry { border-left-color: #ffc107 /* var(--warning-color) */; }
+  .soilDry .icon { color: #ffc107 /* var(--warning-color) */ !important; }
+  .soilHumid { border-left-color: #007bff /* var(--primary-color) */; }
+  .soilHumid .icon { color: #007bff /* var(--primary-color) */ !important; }
+  .soilWet { border-left-color: #17a2b8 /* var(--info-color) */; }
+  .soilWet .icon { color: #17a2b8 /* var(--info-color) */ !important; }
+  
+  .pumpOn { border-left-color: #28a745 /* var(--success-color) */; }
+  .pumpOn .icon { color: #28a745 /* var(--success-color) */ !important; }
+  .pumpOff { border-left-color: #dc3545 /* var(--danger-color) */; }
+  .pumpOff .icon { color: #dc3545 /* var(--danger-color) */ !important; }
+  /* ... adicione mais classes de status conforme seu CSS original ... */
+  
+  .controls {
+    display: flex;
+    flex-direction: column;
+    gap: 18px; /* var(--spacing-md) */
+  }
+  .controlGroup {
+    background-color: #ffffff; /* var(--card-background-color) */
+    padding: 18px; /* var(--spacing-md) */
+    border-radius: 8px; /* var(--border-radius) */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    text-align: center;
+  }
+  .controlGroup h3 {
+    font-family: 'Roboto', sans-serif;
+    font-size: clamp(1.1rem, 1vw + 0.6rem, 1.25rem); /* var(--font-size-md) */
+    color: #6c757d; /* var(--text-muted-color) */
+    margin-bottom: 18px; /* var(--spacing-md) */
+    font-weight: 500;
+  }
+  .buttonGroup {
+    display: flex;
+    justify-content: center;
+    gap: 12px; /* var(--spacing-sm) */
+    flex-wrap: wrap;
+  }
+  .button {
+    color: white;
+    border: none;
+    padding: 12px 18px; /* var(--spacing-sm) var(--spacing-md) */
+    text-align: center;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px; /* var(--spacing-xs) */
+    font-size: clamp(0.95rem, 0.8vw + 0.6rem, 1.1rem); /* var(--font-size-base) */
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 8px; /* var(--border-radius) */
+    min-width: 130px;
+  }
+  .button.on { background-color: #28a745; /* var(--success-color) */ }
+  .button.on:hover:not(:disabled) { background-color: #1e7e34; /* var(--success-hover-color) */ }
+  .button.off { background-color: #dc3545; /* var(--danger-color) */ }
+  .button.off:hover:not(:disabled) { background-color: #b02a37; /* var(--danger-hover-color) */ }
+  .button.mode { background-color: #007bff; /* var(--primary-color) */ }
+  .button.mode:hover:not(:disabled) { background-color: #0056b3; /* var(--primary-hover-color) */ }
+  .button:disabled {
+    background-color: #6c757d !important; /* var(--neutral-color) */
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+  .button.selected { /* Para botões de modo ativo */
+      box-shadow: 0 0 0 3px rgba(0,123,255,0.5); /* Adapte a cor primária */
+      filter: brightness(1.1);
+  }
+  .button.inactive { /* Para botões que não são a opção selecionada no grupo */
+      background-color: #adb5bd !important; /* Cor neutra mais clara */
+      opacity: 0.8;
+  }
+  
+  
+  /* Responsividade principal (copiada/adaptada do seu CSS) */
+  @media (min-width: 1024px) {
+    .mainContent {
+      flex-direction: row;
+      align-items: flex-start;
+    }
+    .mainContent > div:nth-child(1) { /* Sensores */
+      flex: 1.8;
+    }
+    .mainContent > div:nth-child(2) { /* Controles */
+      flex: 1.2;
+      position: sticky;
+      top: 18px; /* var(--spacing-md) */
+      max-height: calc(100vh - 36px - 50px); /* Adapte conforme necessário */
+      overflow-y: auto;
+    }
+  }
+  /* Adicione mais media queries conforme necessário */
