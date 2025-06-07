@@ -950,12 +950,13 @@
             isAutoModeActive = (data.auto_mode === 'Ativado');
             updateButtonStates(data.pump_state, data.auto_mode);
           } catch (e) { console.error("Erro JSON:", e); /* ... (mensagens de erro nos elementos) ... */ }
-        } else if (topic === TOPIC_SUB_ESP_STATUS) {
-          espStatusElem.textContent = payload;
-          if (payload.toLowerCase().includes("online")) { espStatusContainer.className = 'esp-online'; espStatusIconElem.className = 'fas fa-check-circle'; }
-          else if (payload.toLowerCase().includes("offline")) { espStatusContainer.className = 'esp-offline'; espStatusIconElem.className = 'fas fa-times-circle'; }
-          else { espStatusContainer.className = 'esp-loading'; espStatusIconElem.className = 'fas fa-spinner fa-spin'; }
-        }
+         } 
+        // else if (topic === TOPIC_SUB_ESP_STATUS) {
+        //   espStatusElem.textContent = payload;
+        //   if (payload.toLowerCase().includes("online")) { espStatusContainer.className = 'esp-online'; espStatusIconElem.className = 'fas fa-check-circle'; }
+        //   else if (payload.toLowerCase().includes("offline")) { espStatusContainer.className = 'esp-offline'; espStatusIconElem.className = 'fas fa-times-circle'; }
+        //   else { espStatusContainer.className = 'esp-loading'; espStatusIconElem.className = 'fas fa-spinner fa-spin'; }
+        // }
       };
       client.connect({
         onSuccess: function () {
