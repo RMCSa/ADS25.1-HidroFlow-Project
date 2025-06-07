@@ -173,13 +173,13 @@
     }
 
     #panelActionButton {
-      position: absolute; 
+      position: absolute;
       padding: var(--spacing-xs) var(--spacing-sm);
       font-size: var(--font-size-xs);
       min-width: auto;
       flex-shrink: 0;
-      top: 0px; 
-      right: 5px; 
+      top: 0px;
+      right: 5px;
       z-index: 10;
     }
 
@@ -253,15 +253,16 @@
     }
 
     .logoutButton {
-        background-color: var(--danger-color);
-        color: white;
-        padding: var(--spacing-xs) var(--spacing-sm);
-        font-size: var(--font-size-sm);
-        margin-top: var(--spacing-md);
-        float: right;
+      background-color: var(--danger-color);
+      color: white;
+      padding: var(--spacing-xs) var(--spacing-sm);
+      font-size: var(--font-size-sm);
+      margin-top: var(--spacing-md);
+      float: right;
     }
+
     .logoutButton:hover {
-        background-color: var(--danger-hover-color);
+      background-color: var(--danger-hover-color);
     }
 
     .guest-login-btn {
@@ -650,20 +651,20 @@
     </div>
     <p id="authMessage"></p>
   </div>
-  
+
 
   <div class="container" style="display: none;">
     <button id="panelActionButton" style="display: none;"></button>
     <div class="container-header">
-      <h1><i class="fas fa-seedling"></i>HidroFlow <!-- <span style="font-weight: 300; color: var(--text-light-color);">-
-          Painel de Irrigação</span> --> </h1>
-      <!-- <button id="panelActionButton" style="display: none;"></button> -->
+      <h1><i class="fas fa-seedling"></i>HidroFlow
+      </h1>
     </div>
-    
+
     <div class="connection-status-container">
       <div id="mqttStatus" class="disconnected"><i class="fas fa-wifi"></i><span>Desconectado do Broker MQTT</span>
       </div>
-      <div id="espStatus" class="esp-loading"><i class="fas fa-microchip"></i><span>Aguardando status do ESP32...</span>
+      <div id="espStatus" class="esp-loading"><i class="fas fa-microchip"></i><span>Aguardando status do
+          ESP32...</span>
       </div>
     </div>
 
@@ -760,7 +761,7 @@
     const passwordInput = document.getElementById('passwordInput');
     const submitPasswordBtn = document.getElementById('submitPasswordBtn');
     const authMessage = document.getElementById('authMessage');
-    const panelActionButton = document.getElementById('panelActionButton'); // Renomeado
+    const panelActionButton = document.getElementById('panelActionButton');
 
     const mqttStatusElem = document.getElementById('mqttStatus').querySelector('span');
     const mqttStatusIconElem = document.getElementById('mqttStatus').querySelector('i');
@@ -849,7 +850,6 @@
     }
 
     function promptAdminLoginFromGuestView() {
-      // Essencialmente o mesmo que logout, mas o usuário já é guest
       currentUserRole = 'guest'; // Garante que está como guest
       localStorage.removeItem('hidroflowUserRole'); // Limpa qualquer resquício
       resetToAuthScreen();
@@ -882,9 +882,7 @@
     });
     passwordInput.addEventListener('keypress', (event) => { if (event.key === "Enter") { event.preventDefault(); submitPasswordBtn.click(); } });
 
-    // Event listener para o botão de ação do painel é atribuído em updatePanelActionButton
-
-    function updateStatusItemVisuals(itemElement, state, onClass, offClass, neutralClass = null) { /* ... (sem mudanças) ... */
+    function updateStatusItemVisuals(itemElement, state, onClass, offClass, neutralClass = null) {
       itemElement.classList.remove(onClass, offClass);
       if (neutralClass) itemElement.classList.remove(neutralClass);
       const normalizedState = typeof state === 'string' ? state.toLowerCase() : 'n/a';
@@ -892,14 +890,14 @@
       else if (normalizedState === 'desligada' || normalizedState === 'desativado') { itemElement.classList.add(offClass); }
       else if (neutralClass && (normalizedState === 'n/a' || normalizedState === '' || state === undefined || state === null)) { itemElement.classList.add(neutralClass); }
     }
-    function updateSoilMoistureCardVisuals(cardElement, humidityStateText) { /* ... (sem mudanças) ... */
+    function updateSoilMoistureCardVisuals(cardElement, humidityStateText) {
       cardElement.classList.remove('soil-dry', 'soil-humid', 'soil-wet');
       const normalizedState = typeof humidityStateText === 'string' ? humidityStateText.toLowerCase() : 'n/a';
       if (normalizedState === 'seco') { cardElement.classList.add('soil-dry'); }
       else if (normalizedState === 'úmido') { cardElement.classList.add('soil-humid'); }
       else if (normalizedState === 'molhado') { cardElement.classList.add('soil-wet'); }
     }
-    function updateButtonStates(pumpState, autoMode) { /* ... (sem mudanças na lógica interna, mas agora respeita currentUserRole) ... */
+    function updateButtonStates(pumpState, autoMode) {
       const isAdmin = currentUserRole === 'admin';
       pumpOnBtn.classList.remove('selected', 'inactive'); pumpOffBtn.classList.remove('selected', 'inactive');
       if (!isAdmin || autoMode === 'Ativado') {
@@ -924,73 +922,129 @@
       updateStatusItemVisuals(pumpStatusItem, pumpState, 'pump-on', 'pump-off', 'pump-neutral');
       updateStatusItemVisuals(autoModeStatusItem, autoMode, 'auto-mode-on', 'auto-mode-off', 'auto-mode-neutral');
     }
-    function connectMQTT() { /* ... (sem mudanças significativas, exceto a checagem inicial) ... */
+    function connectMQTT() {
       if (client && client.isConnected()) { console.log("MQTT já conectado."); return; }
       client = new Paho.MQTT.Client(MQTT_BROKER_WEBSOCKET, MQTT_CLIENT_ID_WEB);
       client.onConnectionLost = function (responseObject) {
         if (responseObject.errorCode !== 0) {
           console.log("Conexão MQTT perdida: " + responseObject.errorMessage);
-          mqttStatusElem.textContent = "Conexão Perdida..."; // Mais curto
+          mqttStatusElem.textContent = "Conexão Perdida...";
           mqttStatusContainer.className = 'disconnected'; mqttStatusIconElem.className = 'fas fa-times-circle';
           setTimeout(connectMQTT, 5000);
         }
       };
+
+      // ========== INÍCIO DA MODIFICAÇÃO PRINCIPAL ==========
       client.onMessageArrived = function (message) {
-        const topic = message.destinationName; const payload = message.payloadString;
+        const topic = message.destinationName;
+        const payload = message.payloadString;
+
+        // Tenta processar dados do tópico principal
         if (topic === TOPIC_SUB_DATA) {
+          let data;
           try {
-            const data = JSON.parse(payload);
-            const rawWaterLevel = data.water_level;
-            if (rawWaterLevel !== undefined) { const pWL = (parseFloat(rawWaterLevel) / MAX_WATER_LEVEL_RAW_VALUE) * 100; waterLevelElem.textContent = Math.max(0, Math.min(100, pWL)).toFixed(1) + "%"; } else { waterLevelElem.textContent = 'N/A %'; }
-            const rawHumidity = data.humidity;
-            if (rawHumidity !== undefined) { const pH = (parseFloat(rawHumidity) / MAX_HUMIDITY_RAW_VALUE) * 100; humidityElem.textContent = Math.max(0, Math.min(100, pH)).toFixed(1) + "%"; } else { humidityElem.textContent = 'N/A %'; }
-            const currentHumidityState = data.humidity_state || 'N/A';
-            humidityStateElem.textContent = currentHumidityState; updateSoilMoistureCardVisuals(soilMoistureCardElem, currentHumidityState);
-            pumpStateElem.textContent = data.pump_state || 'N/A'; autoModeElem.textContent = data.auto_mode || 'N/A';
+            // Se o payload for vazio, não tenta analisar
+            if (!payload || payload.trim() === '') {
+              console.warn("Payload recebido no tópico de dados está vazio. Ignorando.");
+              return;
+            }
+            data = JSON.parse(payload);
+
+          } catch (e) {
+            // Se o payload não for um JSON válido, registra o erro no console e ignora a mensagem.
+            // A interface do usuário não mostrará um erro, apenas não será atualizada.
+            console.error(`Erro ao analisar JSON no tópico ${TOPIC_SUB_DATA}:`, e);
+            console.error("Payload problemático recebido:", payload);
+            return; // Interrompe a execução para esta mensagem malformada
+          }
+
+          // Se o JSON foi analisado com sucesso, atualiza a interface.
+          // As verificações abaixo garantem que, se uma chave específica faltar no JSON, nada quebre.
+
+          if (data.water_level !== undefined && data.water_level !== null) {
+            const pWL = (parseFloat(data.water_level) / MAX_WATER_LEVEL_RAW_VALUE) * 100;
+            waterLevelElem.textContent = Math.max(0, Math.min(100, pWL)).toFixed(1) + "%";
+          }
+
+          if (data.humidity !== undefined && data.humidity !== null) {
+            const pH = (parseFloat(data.humidity) / MAX_HUMIDITY_RAW_VALUE) * 100;
+            humidityElem.textContent = Math.max(0, Math.min(100, pH)).toFixed(1) + "%";
+          }
+
+          if (data.humidity_state) {
+            humidityStateElem.textContent = data.humidity_state;
+            updateSoilMoistureCardVisuals(soilMoistureCardElem, data.humidity_state);
+          }
+
+          if (data.pump_state) {
+            pumpStateElem.textContent = data.pump_state;
+          }
+
+          if (data.auto_mode) {
+            autoModeElem.textContent = data.auto_mode;
             isAutoModeActive = (data.auto_mode === 'Ativado');
-            updateButtonStates(data.pump_state, data.auto_mode);
-          } catch (e) { console.error("Erro JSON:", e); /* ... (mensagens de erro nos elementos) ... */ }
-         } 
-        // else if (topic === TOPIC_SUB_ESP_STATUS) {
-        //   espStatusElem.textContent = payload;
-        //   if (payload.toLowerCase().includes("online")) { espStatusContainer.className = 'esp-online'; espStatusIconElem.className = 'fas fa-check-circle'; }
-        //   else if (payload.toLowerCase().includes("offline")) { espStatusContainer.className = 'esp-offline'; espStatusIconElem.className = 'fas fa-times-circle'; }
-        //   else { espStatusContainer.className = 'esp-loading'; espStatusIconElem.className = 'fas fa-spinner fa-spin'; }
-        // }
+          }
+
+          // Atualiza os botões e os visuais com base nos dados mais recentes que chegaram
+          updateButtonStates(pumpStateElem.textContent, autoModeElem.textContent);
+
+          // Processa o status do ESP32 (código antes comentado, agora ativo e seguro)
+        } else if (topic === TOPIC_SUB_ESP_STATUS) {
+          if (payload && typeof payload === 'string') {
+            espStatusElem.textContent = payload;
+            const lowerCasePayload = payload.toLowerCase();
+            if (lowerCasePayload.includes("online")) {
+              espStatusContainer.className = 'esp-online';
+              espStatusIconElem.className = 'fas fa-check-circle';
+            } else if (lowerCasePayload.includes("offline")) {
+              espStatusContainer.className = 'esp-offline';
+              espStatusIconElem.className = 'fas fa-times-circle';
+            } else {
+              espStatusContainer.className = 'esp-loading';
+              espStatusIconElem.className = 'fas fa-spinner fa-spin';
+            }
+          } else {
+            console.warn(`Payload inválido recebido no tópico de status: ${payload}`);
+          }
+        }
       };
+      // ========== FIM DA MODIFICAÇÃO PRINCIPAL ==========
+
       client.connect({
         onSuccess: function () {
-          console.log("MQTT Conectado!"); mqttStatusElem.textContent = "Broker"; mqttStatusContainer.className = 'connected'; mqttStatusIconElem.className = 'fas fa-check-circle';
-          client.subscribe(TOPIC_SUB_DATA); client.subscribe(TOPIC_SUB_ESP_STATUS);
+          console.log("MQTT Conectado!"); mqttStatusElem.textContent = "Conectado ao Broker"; mqttStatusContainer.className = 'connected'; mqttStatusIconElem.className = 'fas fa-check-circle';
+          client.subscribe(TOPIC_SUB_DATA);
+          client.subscribe(TOPIC_SUB_ESP_STATUS);
         },
         onFailure: function (message) {
-          console.log("Falha MQTT: " + message.errorMessage); mqttStatusElem.textContent = "Falha MQTT"; mqttStatusContainer.className = 'disconnected'; mqttStatusIconElem.className = 'fas fa-exclamation-triangle';
+          console.log("Falha na conexão MQTT: " + message.errorMessage); mqttStatusElem.textContent = "Falha na Conexão"; mqttStatusContainer.className = 'disconnected'; mqttStatusIconElem.className = 'fas fa-exclamation-triangle';
           setTimeout(connectMQTT, 5000);
         },
         useSSL: MQTT_BROKER_WEBSOCKET.startsWith("wss"), timeout: 5, keepAliveInterval: 60
       });
     }
-    function publishCommand(topic, messagePayload) { /* ... (lógica de checagem de admin já está aqui) ... */
+    function publishCommand(topic, messagePayload) {
       if (currentUserRole !== 'admin') {
-        console.warn("Ação não permitida."); authMessage.textContent = "Acesso restrito a administradores.";
-        // Se o painel estiver visível e o usuário não for admin (ex: localStorage manipulado),
-        // podemos forçar o logout para revalidar.
-        if (mainPanelContainer.style.display === 'block') {
-          // handleLogout(); // Descomente se quiser forçar logout imediato em tentativa de ação não permitida
-        }
+        console.warn("Ação não permitida para visitantes.");
+        // Opcional: mostrar uma mensagem temporária
+        const originalText = authMessage.textContent;
+        authMessage.textContent = "Acesso restrito a administradores.";
+        setTimeout(() => { authMessage.textContent = originalText; }, 3000);
         return;
       }
       if (client && client.isConnected()) {
         const message = new Paho.MQTT.Message(messagePayload); message.destinationName = topic; message.qos = 1; message.retained = false;
-        client.send(message); console.log(`Comando: ${topic}, ${messagePayload}`); authMessage.textContent = '';
+        client.send(message); console.log(`Comando enviado: Tópico=${topic}, Mensagem=${messagePayload}`);
       } else {
-        console.error("MQTT não conectado."); mqttStatusElem.textContent = "Não conectado"; mqttStatusContainer.className = 'disconnected'; mqttStatusIconElem.className = 'fas fa-exclamation-triangle';
+        console.error("MQTT não conectado. Não é possível enviar comando.");
+        mqttStatusElem.textContent = "Não conectado"; mqttStatusContainer.className = 'disconnected'; mqttStatusIconElem.className = 'fas fa-exclamation-triangle';
       }
     }
-    pumpOnBtn.addEventListener('click', function () { if (currentUserRole === 'admin' && !isAutoModeActive) { publishCommand(TOPIC_PUB_PUMP_COMMAND, "ON"); } else if (currentUserRole !== 'admin') { publishCommand("", ""); } });
-    pumpOffBtn.addEventListener('click', function () { if (currentUserRole === 'admin' && !isAutoModeActive) { publishCommand(TOPIC_PUB_PUMP_COMMAND, "OFF"); } else if (currentUserRole !== 'admin') { publishCommand("", ""); } });
-    autoOnBtn.addEventListener('click', function () { if (currentUserRole === 'admin') { publishCommand(TOPIC_PUB_MODE_COMMAND, "AUTO_ON"); } else { publishCommand("", ""); } });
-    autoOffBtn.addEventListener('click', function () { if (currentUserRole === 'admin') { publishCommand(TOPIC_PUB_MODE_COMMAND, "AUTO_OFF"); } else { publishCommand("", ""); } });
+
+    pumpOnBtn.addEventListener('click', function () { if (!this.disabled) { publishCommand(TOPIC_PUB_PUMP_COMMAND, "ON"); } });
+    pumpOffBtn.addEventListener('click', function () { if (!this.disabled) { publishCommand(TOPIC_PUB_PUMP_COMMAND, "OFF"); } });
+    autoOnBtn.addEventListener('click', function () { if (!this.disabled) { publishCommand(TOPIC_PUB_MODE_COMMAND, "AUTO_ON"); } });
+    autoOffBtn.addEventListener('click', function () { if (!this.disabled) { publishCommand(TOPIC_PUB_MODE_COMMAND, "AUTO_OFF"); } });
 
     document.addEventListener('DOMContentLoaded', function () {
       espStatusElem.textContent = "Aguardando ESP32...";
